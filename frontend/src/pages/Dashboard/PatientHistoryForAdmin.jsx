@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Alert, Spinner, Card, Button } from "react-bootstrap";
 import { getCompletedAppointmentsByUser } from "../../states/AppointmentStates";
 

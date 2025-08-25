@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, Spinner, Alert, Pagination } from "react-bootstrap";
 import { getAllDoctors } from "../../states/DoctorState";
 

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Button, Badge, Spinner, Pagination, Form } from "react-bootstrap";
 import {
   getAllAppointments,
   updateAppointmentStatus,
   searchAppointmentsByName,
 } from "../../states/AppointmentStates";
+import { toast } from "react-toastify";
 
 export default function Appointments({ setActive, setSelectedPatientId }) {
   const [appointments, setAppointments] = useState([]);
@@ -92,6 +93,7 @@ export default function Appointments({ setActive, setSelectedPatientId }) {
           appt.id === id ? { ...appt, status: newStatus } : appt
         )
       );
+      toast.success("Status successfully", newStatus);
     } else {
       setError(message || "Failed to update status");
     }

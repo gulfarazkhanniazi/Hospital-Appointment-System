@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Row, Col, Alert, Pagination, Spinner } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Table, Button, Modal, Form, Row, Col, Alert, Pagination, Spinner, Toast } from "react-bootstrap";
 import { getAllUsers, updateUser, deleteUser } from "../../states/UserStates";
+import { toast } from "react-toastify";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -47,6 +48,7 @@ export default function Users() {
       setError(res.error);
     } else {
       // Refresh current page after deletion
+      toast.success("User deleted successfully");
       fetchUsers(page);
     }
     setDeletingId(null);
@@ -92,6 +94,7 @@ export default function Users() {
     if (res.error) {
       setError(res.error);
     } else {
+      toast.success("User updated successfully");
       fetchUsers(page);
       setShowEditModal(false);
       setSelectedUser(null);

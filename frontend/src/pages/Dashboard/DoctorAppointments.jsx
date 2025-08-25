@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Table, Button, Badge, Spinner, Pagination } from "react-bootstrap";
 import {
   getDoctorAppointments,
   updateAppointmentStatus,
 } from "../../states/AppointmentStates";
+import { toast } from "react-toastify";
 
 export default function DoctorAppointments({
   setActive,
@@ -45,6 +46,7 @@ export default function DoctorAppointments({
     setActionLoading(null);
 
     if (success) {
+      toast.success("Appointment Successfully", newStatus);
       setAppointments((prev) =>
         prev.map((appt) =>
           appt.id === id ? { ...appt, status: newStatus } : appt

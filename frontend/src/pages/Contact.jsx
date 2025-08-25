@@ -6,6 +6,7 @@ import Navbar from "../componants/Navbar";
 import { BsTelephone, FiMail, FiMapPin } from "../assets/icons/vander";
 import FooterFour from "../componants/SmallFooter";
 import { sendContactMessage } from "../states/ContactStates"; // <-- Import function
+import { toast } from "react-toastify";
 
 export default function Contact() {
   const [form, setForm] = useState({
@@ -55,7 +56,7 @@ export default function Contact() {
     if (error) {
       setError(error);
     } else {
-      setSuccess("Message sent successfully!");
+      toast.success("Message sent successfully!");
       setForm({ name: "", email: "", subject: "", comments: "" });
     }
   };

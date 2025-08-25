@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import bgImg from "../assets/images/bg/07.jpg";
 import logo from "../assets/images/logo-icon-80.png";
+import { toast } from 'react-toastify'
 import { forgotPassword } from "../states/UserStates";
 import { forgotPasswordDoctor } from "../states/DoctorState";
 
@@ -32,9 +33,9 @@ export default function ResetPassword() {
     if (isDoctor) {
       response = await forgotPasswordDoctor(email); // { success, message, data }
       if (!response.success) {
-        setError(response.message || "Failed to send reset link");
+        toast.error(response.message || "Failed to send reset link");
       } else {
-        setMessage(
+        toast.success(
           response.data?.message || "Password reset link sent successfully."
         );
         setEmail("");
@@ -42,9 +43,9 @@ export default function ResetPassword() {
     } else {
       response = await forgotPassword(email); // { data, error }
       if (response.error) {
-        setError(response.error);
+        toast.error(response.error);
       } else {
-        setMessage(
+        toast.success(
           response.data?.message || "Password reset link sent successfully."
         );
         setEmail("");

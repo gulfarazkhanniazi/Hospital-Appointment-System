@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Sidebar from "./Sidebar";
+import { logoutUser } from "../../states/UserStates";
 
 // Content pages
 import DashboardHome from "./DashboardHome";
@@ -14,6 +15,8 @@ import DoctorDetails from "./DoctorDetail";
 import DoctorAppointments from "./DoctorAppointments";
 import DoctorProfile from "./DoctorProfile";
 import PatientHistoryForAdmin from "./PatientHistoryForAdmin";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function AdminLayout() {
   const [active, setActive] = useState("");
@@ -23,6 +26,8 @@ export default function AdminLayout() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
   const user = useSelector((state) => state.dasuser.user);
 
   useEffect(() => {
@@ -108,6 +113,12 @@ export default function AdminLayout() {
         ) : (
           <h3 className="text-center">Access Denied</h3>
         );
+        case "Logout":
+          // Handle logout and navigation
+          logoutUser(dispatch);
+          toast.success("Logged out successfully");
+          navigate("/");
+          return null;
 
       default:
         if (user.role === "admin") {

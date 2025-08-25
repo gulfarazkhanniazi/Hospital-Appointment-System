@@ -5,6 +5,7 @@ import {
   addAppointment,
   getBookedSlots,
 } from "../states/AppointmentStates";
+import { toast } from "react-toastify";
 
 const AppointmentForm = ({ onBook }) => {
   const [specialization, setSpecialization] = useState("");
@@ -126,6 +127,7 @@ useEffect(() => {
 
     const res = await addAppointment(newAppointment);
     if (res.success) {
+      toast.success("Appointment booked successfully");
       onBook(res.data.appointment);
       setSpecialization("");
       setDoctorId("");

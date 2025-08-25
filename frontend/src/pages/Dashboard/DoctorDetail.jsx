@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   Button,
@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import { getDoctorById, deleteDoctor } from "../../states/DoctorState";
+import { toast } from "react-toastify";
 
 // ---- Convert minutes to 12-hour format (e.g., 90 → 1:30 AM) ----
 const formatTime = (minutes) => {
@@ -55,7 +56,7 @@ export default function DoctorDetails({ selectedDoctorId, setActive }) {
     setShowDeleteModal(false);
 
     if (success) {
-      setSuccess("Doctor deleted successfully.");
+      toast.success("Doctor deleted successfully.");
       setTimeout(() => setActive("Doctors"), 1500);
     } else {
       setError(message || "Failed to delete doctor.");

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, Form, Button, Row, Col, Alert, Spinner } from "react-bootstrap";
 import { addPrescription } from "../../states/PrescriptionStates";
+import { toast } from "react-toastify";
 
 const AddPrescription = ({ appointmentId }) => {
   const [formData, setFormData] = useState({
@@ -51,9 +52,9 @@ const AddPrescription = ({ appointmentId }) => {
     setLoading(false);
 
     if (error) {
-      setMessage({ type: "danger", text: error });
+      toast.error(error || "Failed to add prescription");
     } else {
-      setMessage({ type: "success", text: "Prescription added successfully" });
+      toast.success("Prescription added successfully");
       setFormData({ prescription: "", notes: "", disease: "" });
     }
   };

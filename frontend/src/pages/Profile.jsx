@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser, logoutUser } from "../states/UserStates";
 import { login } from "../redux/UserSlice";
+import { toast } from "react-toastify";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -93,6 +94,7 @@ export default function Profile() {
   const handleLogout = async () => {
     try {
       await logoutUser(dispatch);
+      toast.success("Logged out successfully");
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -124,6 +126,7 @@ export default function Profile() {
       setUpdateError(error);
     } else {
       dispatch(login(data.user)); // Update Redux user
+      toast.success("Profile updated successfully");
       setEditMode(false);
     }
     setIsLoading(false);

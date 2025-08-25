@@ -19,9 +19,9 @@ const menuItems = [
   { key: "AdminAppointments", icon: <FaCalendarCheck />, label: "Admin Appointments", roles: ["admin"] },
   { key: "DoctorAppointments", icon: <FaCalendarCheck />, label: "Doctor Appointments", roles: ["doctor"] },
   { key: "AddDoctor", icon: <FaPlusCircle />, label: "Add Doctor", roles: ["admin"] },
-  { key: "AddPrescription", icon: <FaFilePrescription />, label: "Add Prescription", roles: ["doctor"] },
   { key: "DoctorProfile", icon: <FaUserMd />, label: "Doctor Profile", roles: ["doctor"] },
   { key: "Users", icon: <FaUsers />, label: "Patients", roles: ["admin"] },
+  { key: "Logout", icon: <FaFilePrescription />, label: "Logout", roles: ["admin", "doctor"] },
 ];
 
 export default function Sidebar({ active, setActive, isOpen, setIsOpen }) {

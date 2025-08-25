@@ -4,6 +4,7 @@ import bgImg from "../assets/images/bg/07.jpg";
 import logo from "../assets/images/logo-icon-80.png";
 import { resetPassword } from "../states/UserStates";
 import { resetPasswordDoctor } from "../states/DoctorState";
+import { toast } from 'react-toastify'
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -49,9 +50,9 @@ export default function ResetPassword() {
     setLoading(false);
 
     if (!response.success) {
-      setError(response.message || "Failed to reset password");
+      toast.error(response.message || "Failed to reset password");
     } else {
-      setSuccess("Password reset successfully. Redirecting to Home...");
+      toast.success("Password reset successfully. Redirecting to Home...");
       setTimeout(() => navigate("/"), 2000);
     }
   };

@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/UserSlice";
 import { loginUser } from "../states/UserStates";
 import { loginDoctor } from "../states/DoctorState";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -39,6 +40,11 @@ export default function Login() {
         : response.data.user;
 
       dispatch(login(user));
+      toast.success("Login successful!");
+      if(isDoctor){
+        navigate("/dashboard");
+        return;
+      }
       navigate("/");
     } else {
       setError(response.message);

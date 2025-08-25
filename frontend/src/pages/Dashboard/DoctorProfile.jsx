@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Card, Button, Form, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { getDoctorById, updateDoctor } from "../../states/DoctorState";
 import { login } from "../../redux/UserSlice";
+import { toast } from "react-toastify";
 
 // ---- Convert minutes to HH:MM (for <input type="time">) ----
 const minutesToTimeString = (minutes) => {
@@ -135,7 +136,7 @@ export default function DoctorProfile() {
     setUpdating(false);
 
     if (res.success) {
-      setSuccess("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
       setEditMode(false);
       setDoctor(res.data.doctor);
       dispatch(login({ ...user, ...res.data.doctor }));

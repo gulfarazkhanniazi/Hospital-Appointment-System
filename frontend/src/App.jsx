@@ -22,6 +22,10 @@ import Dashboard from "./pages/Dashboard/DashboardLayout";
 import ProtectedRoute from "./componants/ProtectedRoutes";
 import ResetPassword from "./pages/ResetPassword";
 
+// Import react-toastify
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import "./assets/css/materialdesignicons.min.css";
 import "./assets/scss/style.scss";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
@@ -98,6 +102,18 @@ function App() {
         />
         <Route path="*" element={<Error />} />
       </Routes>
+      {/* Toast container at the top-right */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000} // Auto close after 5 seconds
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeButton={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Router>
   );
 }

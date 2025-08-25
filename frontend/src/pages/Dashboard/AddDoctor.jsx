@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Button, Row, Col, Card, Alert } from "react-bootstrap";
 import { addDoctor } from "../../states/DoctorState";
+import { toast } from "react-toastify";
 
 export default function AddDoctor() {
   const [formData, setFormData] = useState({
@@ -28,7 +29,6 @@ export default function AddDoctor() {
   });
 
   const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
   const [apiError, setApiError] = useState("");
 
   const handleChange = (e) => {
@@ -138,8 +138,7 @@ export default function AddDoctor() {
 
       const res = await addDoctor(finalData);
       if (res.success) {
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        toast.success("Doctor added successfully.");
         resetForm();
       } else setApiError(res.message);
     }
@@ -175,7 +174,6 @@ export default function AddDoctor() {
       <Card className="shadow-lg rounded-4 p-4 animate__animated animate__fadeIn">
         <h3 className="mb-4 fw-bold text-center">Add Doctor</h3>
 
-        {submitted && <Alert variant="success">Doctor added successfully!</Alert>}
         {apiError && <Alert variant="danger">{apiError}</Alert>}
 
         <Form onSubmit={handleSubmit}>

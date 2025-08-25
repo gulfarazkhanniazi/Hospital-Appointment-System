@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/UserSlice";
 import { registerUser } from "../states/UserStates";
 import bgImg from "../assets/images/bg/07.jpg";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const dispatch = useDispatch();
@@ -104,6 +105,7 @@ export default function Signup() {
       setApiError(error);
     } else if (data) {
       dispatch(login(data.user));
+      toast.success("Registration successful!");
       navigate("/");
     } else {
       setApiError("Unexpected error occurred, please try again later.");
