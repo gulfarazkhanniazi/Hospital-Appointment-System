@@ -24,7 +24,7 @@ export default function FooterFive() {
                                                 <Link to="/team" className="text-foot me-3">Find Doctors</Link>
                                             </li>
                                             <li className="list-inline-item mb-0">
-                                                <Link to="/appointments" className="text-foot me-3">Appointments</Link>
+                                                <Link to="/bookappointment" className="text-foot me-3">Appointments</Link>
                                             </li>
                                             <li className="list-inline-item mb-0">
                                                 <Link to="/faqs" className="text-foot me-3">FAQs</Link>

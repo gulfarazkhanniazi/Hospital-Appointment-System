@@ -15,6 +15,20 @@ export const registerUser = async (userData) => {
   }
 };
 
+// -------- SEND OTP --------
+export const sendOTP = async (email) => {
+  try {
+    const { data } = await axios.post(`${API_URL}auth/send-otp`, { email }, {withCredentials: true});
+    // backend should return { success: true, message: "OTP sent" }
+    return { success: true, message: data.message };
+  } catch (err) {
+    return {
+      success: false,
+      message: err.response?.data?.error || "Failed to send OTP",
+    };
+  }
+};
+
 // -------- LOGIN --------
 export const loginUser = async (email, password) => {
   try {

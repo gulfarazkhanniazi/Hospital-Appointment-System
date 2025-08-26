@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import { useSelector, useDispatch } from "react-redux";
-
+import { toast } from 'react-toastify'
 import logoDark from "../assets/images/logo-dark.png";
 import logoLight from "../assets/images/logo-light.png";
 import { logoutUser } from "../states/UserStates";
@@ -32,6 +32,7 @@ export default function StartupNavbar() {
     try {
       await logoutUser(dispatch);
       if (isMobile) setIsMenu(false);
+      toast.success("Logged out successfully");
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);

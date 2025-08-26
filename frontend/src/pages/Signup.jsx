@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Alert, Card, Container, Row, Col } from "react-bootstrap";
+import { Form, Button, Alert, Card, Container, Row, Col, InputGroup } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/UserSlice";
-import { registerUser } from "../states/UserStates";
+import { registerUser, sendOTP } from "../states/UserStates";
 import bgImg from "../assets/images/bg/07.jpg";
 import { toast } from "react-toastify";
 
@@ -19,6 +19,7 @@ export default function Signup() {
     gender: "",
     phone: "",
     age: "",
+    otp: "",
   });
 
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -26,6 +27,8 @@ export default function Signup() {
 
   const [fieldErrors, setFieldErrors] = useState({});
   const [apiError, setApiError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -65,6 +68,9 @@ export default function Signup() {
       case "age":
         if (!value || isNaN(value) || value < 18) return "Age must be at least 18";
         break;
+      case "otp":
+        if (otpSent && (!value || value.length < 4)) return "Enter a valid OTP";
+        break;
       default:
         return "";
     }
@@ -86,6 +92,33 @@ export default function Signup() {
     return Object.keys(errors).length === 0 && acceptTerms;
   };
 
+  const handleSendOTP = async () => {
+    setFieldErrors((prev) => ({ ...prev, email: "" }));
+
+    const emailError = validateField("email", formData.email);
+    if (emailError) {
+      setFieldErrors((prev) => ({ ...prev, email: emailError }));
+      return;
+    }
+
+    try {
+      setOtpLoading(true);
+      const { success, error } = await sendOTP(formData.email);
+
+      if (error) {
+        toast.error(error);
+        setOtpSent(false);
+      } else if (success) {
+        toast.success("OTP sent successfully!");
+        setOtpSent(true);
+      }
+    } catch (err) {
+      toast.error("Failed to send OTP. Please try again.");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError("");
@@ -99,6 +132,7 @@ export default function Signup() {
       gender: formData.gender,
       phone: formData.phone,
       age: parseInt(formData.age),
+      otp: formData.otp,
     });
 
     if (error) {
@@ -154,18 +188,28 @@ export default function Signup() {
                   <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>Email Address</Form.Label>
-                      <Form.Control
-                        type="email"
-                        name="email"
-                        placeholder="name@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        onBlur={(e) =>
-                          setFieldErrors((prev) => ({ ...prev, email: validateField("email", e.target.value) }))
-                        }
-                        isInvalid={!!fieldErrors.email}
-                      />
-                      <Form.Control.Feedback type="invalid">{fieldErrors.email}</Form.Control.Feedback>
+                      <InputGroup>
+                        <Form.Control
+                          type="email"
+                          name="email"
+                          placeholder="name@example.com"
+                          value={formData.email}
+                          onChange={handleChange}
+                          onBlur={(e) =>
+                            setFieldErrors((prev) => ({ ...prev, email: validateField("email", e.target.value) }))
+                          }
+                          isInvalid={!!fieldErrors.email}
+                          disabled={otpSent} // lock email after OTP sent
+                        />
+                        <Button
+                          variant="outline-primary"
+                          onClick={handleSendOTP}
+                          disabled={otpLoading || otpSent}
+                        >
+                          {otpLoading ? "Sending..." : otpSent ? "Sent" : "Send OTP"}
+                        </Button>
+                        <Form.Control.Feedback type="invalid">{fieldErrors.email}</Form.Control.Feedback>
+                      </InputGroup>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -173,39 +217,38 @@ export default function Signup() {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Password</Form.Label>
+                      <Form.Label>Age</Form.Label>
                       <Form.Control
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
+                        type="number"
+                        name="age"
+                        placeholder="Age"
+                        value={formData.age}
                         onChange={handleChange}
                         onBlur={(e) =>
-                          setFieldErrors((prev) => ({ ...prev, password: validateField("password", e.target.value) }))
+                          setFieldErrors((prev) => ({ ...prev, age: validateField("age", e.target.value) }))
                         }
-                        isInvalid={!!fieldErrors.password}
+                        isInvalid={!!fieldErrors.age}
                       />
-                      <Form.Control.Feedback type="invalid">{fieldErrors.password}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">{fieldErrors.age}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Confirm Password</Form.Label>
+                      <Form.Label>OTP</Form.Label>
                       <Form.Control
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        value={formData.confirmPassword}
+                        type="number"
+                        name="otp"
+                        placeholder="Enter OTP"
+                        value={formData.otp}
                         onChange={handleChange}
                         onBlur={(e) =>
-                          setFieldErrors((prev) => ({
-                            ...prev,
-                            confirmPassword: validateField("confirmPassword", e.target.value),
-                          }))
+                          setFieldErrors((prev) => ({ ...prev, otp: validateField("otp", e.target.value) }))
                         }
-                        isInvalid={!!fieldErrors.confirmPassword}
+                        isInvalid={!!fieldErrors.otp}
+                        disabled={!otpSent}
+                        required={otpSent}
                       />
-                      <Form.Control.Feedback type="invalid">{fieldErrors.confirmPassword}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">{fieldErrors.otp}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -253,24 +296,43 @@ export default function Signup() {
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Age</Form.Label>
+                      <Form.Label>Password</Form.Label>
                       <Form.Control
-                        type="number"
-                        name="age"
-                        placeholder="Age"
-                        value={formData.age}
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={formData.password}
                         onChange={handleChange}
                         onBlur={(e) =>
-                          setFieldErrors((prev) => ({ ...prev, age: validateField("age", e.target.value) }))
+                          setFieldErrors((prev) => ({ ...prev, password: validateField("password", e.target.value) }))
                         }
-                        isInvalid={!!fieldErrors.age}
+                        isInvalid={!!fieldErrors.password}
                       />
-                      <Form.Control.Feedback type="invalid">{fieldErrors.age}</Form.Control.Feedback>
+                      <Form.Control.Feedback type="invalid">{fieldErrors.password}</Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Confirm Password</Form.Label>
+                      <Form.Control
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        onBlur={(e) =>
+                          setFieldErrors((prev) => ({
+                            ...prev,
+                            confirmPassword: validateField("confirmPassword", e.target.value),
+                          }))
+                        }
+                        isInvalid={!!fieldErrors.confirmPassword}
+                      />
+                      <Form.Control.Feedback type="invalid">{fieldErrors.confirmPassword}</Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
 
-                {/* Checkbox full-width above button */}
                 <Form.Group className="mb-3">
                   <Form.Check
                     type="checkbox"

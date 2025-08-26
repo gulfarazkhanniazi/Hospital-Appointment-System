@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, data } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login, logout } from "./redux/UserSlice";
 
@@ -23,7 +23,7 @@ import ProtectedRoute from "./componants/ProtectedRoutes";
 import ResetPassword from "./pages/ResetPassword";
 
 // Import react-toastify
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import "./assets/css/materialdesignicons.min.css";
@@ -95,9 +95,13 @@ function App() {
         <Route
           path="/dashboard"
           element={
+            data.user?.role === 'admin' ? (
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
+            ) : (
+              <Error />
+            )
           }
         />
         <Route path="*" element={<Error />} />

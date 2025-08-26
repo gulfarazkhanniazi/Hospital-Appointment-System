@@ -1,22 +1,71 @@
-import express from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import pool from "../database/connection.js";
-import { sendMail } from '../utils/mailer.js'
-import { authenticateUser } from "../middlewares/auth.js";
+  import express from "express";
+  import bcrypt from "bcrypt";
+  import jwt from "jsonwebtoken";
+  import dotenv from "dotenv";
+  import pool from "../database/connection.js";
+  import { sendMail } from '../utils/mailer.js'
+  import { authenticateUser } from "../middlewares/auth.js";
 
-const route = express.Router();
-dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
+  const route = express.Router();
+  dotenv.config();
+  const JWT_SECRET = process.env.JWT_SECRET;
+
+  // 📌 SEND OTP
+route.post("/send-otp", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    // check email exists or not
+    const userCheck = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    // generate 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // send otp via email
+    await sendMail({
+      to: email,
+      subject: "Your OTP Code",
+      html: `<h3>Your OTP is: <b>${otp}</b></h3><p>It will expire in 5 minutes.</p>`
+    });
+
+    // store otp in cookie for 5 minutes
+    res.cookie("das-otp", otp, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 5 * 60 * 1000
+    });
+
+    return res.json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.error("Send OTP error:", error.message);
+    return res.status(500).json({ error: "Failed to send OTP" });
+  }
+});
 
 // ✅ REGISTER
 route.post("/register", async (req, res) => {
   try {
-    const { email, password, gender, phone, role, age, name } = req.body;
+    const { email, password, gender, phone, role, age, name, otp } = req.body;
 
     if (!email || !password || !gender || !phone || !age || !name)
       return res.status(400).json({ error: "All fields are required" });
+
+    // validate otp
+    console.log(req.cookies['das-otp'], otp);
+    
+    if (!req.cookies["das-otp"]) {
+      return res.status(400).json({ error: "OTP expired or not requested" });
+    }
+    if (req.cookies["das-otp"] !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
 
     if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(email))
       return res.status(400).json({ error: "Invalid email" });
@@ -45,13 +94,14 @@ route.post("/register", async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO users (name, email, password, gender, phone, role, age)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, gender, phone, role, age, created_at`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, gender, phone, role, age, created_at`,
       [name, email, hashedPassword, gender, phone, userRole, age]
     );
 
     const user = result.rows[0];
 
     const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: "24h" });
+    res.clearCookie("das-otp");
 
     res
       .cookie("das-token", token, {
